@@ -1,0 +1,30 @@
+{
+  "name": "sql-library-manager",
+  "version": "1.0.0",
+  "description": "A webapp that manages a collection of books by performing CRUD operations",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/epaitoo/sql-library-manager.git"
+  },
+  "author": "Eugene Paitoo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epaitoo/sql-library-manager/issues"
+  },
+  "homepage": "https://github.com/epaitoo/sql-library-manager#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pug": "^2.0.3",
+    "sequelize": "^5.8.7",
+    "sequelize-cli": "^5.4.0",
+    "sqlite3": "^4.0.8"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}

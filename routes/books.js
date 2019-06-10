@@ -10,6 +10,8 @@ router.use(bodyParser.json())
 router.get('/', (req, res) => {
   Book.findAll().then((books) => {
     res.render('index', {books: books, title: 'Books' });
+  }).catch((err) => {
+    res.render('server-error', err, {title: 'Server Error'})
   });
 });
 
@@ -22,22 +24,36 @@ router.get('/new', (req, res) => {
 router.post('/new', (req, res) => {
   Book.create(req.body).then(() => {
     res.redirect('/');
+  }).catch((err) => {
+    res.render('server-error', err, {title: 'Server Error'})
   });
 });
 
 // Get individual book detail
 router.get('/:id', (req, res) => {
   Book.findByPk(req.params.id).then((book) => {
-    res.render('update-book', { book: book, title: 'Update Book' });
+    if (book) {
+      res.render('update-book', { book: book, title: 'Update Book' });
+    } else {
+      res.render('page-not-found', {title: 'Page Not Found'})
+    } 
+  }).catch((err) => {
+    res.render('server-error', err, {title: 'Server Error'})
   });  
 });
 
 // updates the book detail 
 router.post('/:id', (req, res) => {
   Book.findByPk(req.params.id).then((book) => {
-    return book.update(req.body).then(() => {
-      res.redirect('/');
-    });
+    if (book) {
+      return book.update(req.body);
+    } else {
+      res.render('page-not-found', {title: 'Page Not Found'});
+    } 
+  }).then(() => {
+    res.redirect('/');
+  }).catch((err) => {
+    res.render('server-error', err, { title: 'Server Error'})
   });
 });
 
@@ -46,9 +62,18 @@ router.post('/:id', (req, res) => {
 // deletes a book
 // Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting.
 router.post('/:id/delete', (req, res) => {
-  
+  Book.findByPk(req.params.id).then((book) => {
+    if (book) {
+      return book.destroy();
+    } else {
+      res.render('page-not-found', {title: 'Page Not Found'});
+    }  
+  }).then(() =>{
+    res.redirect('/');
+  }).catch((err) => {
+    res.render('server-error', err, {title: 'Server Error'})
+  });
 });
-
 
 
 

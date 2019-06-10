@@ -1,24 +1,33 @@
 const express = require('express');
 const router = express.Router();
+const Book = require('../models').Book;
+const bodyParser = require('body-parser');
+
+router.use(bodyParser.urlencoded({ extended: false }))
+router.use(bodyParser.json())
 
 // List of all books
 router.get('/', (req, res) => {
-  res.render('index');
+  Book.findAll().then((books) => {
+    res.render('index', {books: books, title: 'Books' });
+  });
 });
 
 // shows a new book form
 router.get('/new', (req, res) => {
-  res.render('new-book');
+  res.render('new-book', { book: Book.build(), title: 'New Book' });
 });
 
-// post a new book to the database
+// creates a new book to the database
 router.post('/new', (req, res) => {
-
+  Book.create(req.body).then(() => {
+    res.redirect('/');
+  });
 });
 
 // Get individual book detail
 router.get('/:id', (req, res) => {
-  res.render('update-book');
+  res.render('update-book', { title: 'Update Book' });
 });
 
 // updates the book detail in the database

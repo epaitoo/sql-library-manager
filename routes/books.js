@@ -27,12 +27,18 @@ router.post('/new', (req, res) => {
 
 // Get individual book detail
 router.get('/:id', (req, res) => {
-  res.render('update-book', { title: 'Update Book' });
+  Book.findByPk(req.params.id).then((book) => {
+    res.render('update-book', { book: book, title: 'Update Book' });
+  });  
 });
 
-// updates the book detail in the database
+// updates the book detail 
 router.post('/:id', (req, res) => {
-
+  Book.findByPk(req.params.id).then((book) => {
+    return book.update(req.body).then(() => {
+      res.redirect('/');
+    });
+  });
 });
 
 

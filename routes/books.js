@@ -25,6 +25,16 @@ router.post('/new', (req, res) => {
   Book.create(req.body).then(() => {
     res.redirect('/');
   }).catch((err) => {
+    if (err.name === "SequelizeValidationError") {
+      res.render('new-book', { 
+        book: Book.build(req.body), 
+        title: 'New Book',
+        errors: err.errors 
+      });
+    } else {
+      throw err;
+    }
+  }).catch((err) => {
     res.render('server-error', err, {title: 'Server Error'})
   });
 });
@@ -42,6 +52,8 @@ router.get('/:id', (req, res) => {
   });  
 });
 
+
+
 // updates the book detail 
 router.post('/:id', (req, res) => {
   Book.findByPk(req.params.id).then((book) => {
@@ -53,9 +65,23 @@ router.post('/:id', (req, res) => {
   }).then(() => {
     res.redirect('/');
   }).catch((err) => {
+    if (err.name === "SequelizeValidationError") {
+      const book = Book.build(req.body);
+      book.id = req.params.id;
+        res.render('update-book', { 
+          book: book, 
+          title: 'Update Book',
+          errors: err.errors 
+        });
+    } else {
+      throw err;
+    }
+  }).catch((err) => {
     res.render('server-error', err, { title: 'Server Error'})
   });
 });
+
+
 
 
 

@@ -1,6 +1,55 @@
+html, body {
+  height: 100%;
+}
+
+html {
+  display: table;
+  margin: auto;
+}
+
 body {
   padding: 10px 50px 50px;
   font: 18px "Garamond", serif;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.header {
+  text-align: center;
+}
+
+.search-form {
+  max-width: 460px;
+  display: flex;
+  margin: 0 auto 32px;
+}
+
+.search-form button {
+  background-color: #019875;
+  cursor: pointer;
+  outline: none;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  padding: 0px 15px;
+  border-radius: 0px 2em 2em 0px;
+  transition: background-color 0.5s ease 0s;
+}
+
+  .search-form button:hover {
+    background-color: rgb(22, 78, 22);
+  } 
+
+.search-input {
+  font-size: 1em;
+  width: 100%;
+  background-color: #edeff0;
+  padding: 10px 15px;
+  border: 3px solid #d7dbdf;
+  border-right: none;
+  border-radius: 2em 0 0 2em;
+  outline: none; 
 }
 
 a {

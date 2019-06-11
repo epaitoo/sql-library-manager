@@ -2,13 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models').Book;
 const bodyParser = require('body-parser');
+const Sequelize = require('../models').sequelize;
+const Op = Sequelize.Op;
 
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
 // List of all books
 router.get('/', (req, res) => {
-  Book.findAll().then((books) => {
+  Book.findAll({order: [['title', 'ASC']]}).then((books) => {
     res.render('index', {books: books, title: 'Books' });
   }).catch((err) => {
     res.render('server-error', err, {title: 'Server Error'})
@@ -52,6 +54,23 @@ router.get('/:id', (req, res) => {
   });  
 });
 
+
+// Search for a book 
+router.get('/search', (req, res) => {
+  let { term } = req.query;
+  term = term.toLowerCase();
+
+  Book.findAll({ where: { 
+    title: { [Op.like] : '%' + term + '%' },  
+    author: {  [Op.like] : '%' + term + '%' },
+    genre: { [Op.like] : '%' + term + '%' },
+    year: { [Op.like] : '%' + term + '%' }
+    } 
+  }).then((books) => {
+    res.render('index', { books: books });
+  }).catch(err => console.log(err))
+
+});
 
 
 // updates the book detail 

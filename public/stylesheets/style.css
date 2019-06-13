@@ -11,7 +11,6 @@ body {
   padding: 10px 50px 50px;
   font: 18px "Garamond", serif;
   display: table-cell;
-  vertical-align: middle;
 }
 
 .header {
@@ -141,6 +140,14 @@ input[type=text] {
   width: 300px;
 }
 
+/* Helper Classes */
+
 .error {
   color: rgb(236, 15, 15);
+}
+
+.not-found {
+  margin-top: 30px;
+  text-align: center;
+  font-size: x-large;
 }

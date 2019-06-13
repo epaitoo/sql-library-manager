@@ -2,20 +2,42 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models').Book;
 const bodyParser = require('body-parser');
-const Sequelize = require('../models').sequelize;
+const Sequelize = require('../models').Sequelize;
 const Op = Sequelize.Op;
 
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
+
 // List of all books
 router.get('/', (req, res) => {
   Book.findAll({order: [['title', 'ASC']]}).then((books) => {
-    res.render('index', {books: books, title: 'Books' });
+    res.render('index', {books: books, title: 'Books', isSearch: false });
   }).catch((err) => {
-    res.render('server-error', err, {title: 'Server Error'})
+    res.render('error', err)
   });
 });
+
+// Search for a book 
+router.get('/search', (req, res) => {
+  let { term } = req.query;
+  term = term.toLowerCase();
+
+  Book.findAll({ where: { 
+      [Op.or] : [
+        { title : { [Op.like]: '%' + term + '%'  } },
+        { author : { [Op.like]: '%' + term + '%'  } },
+        { genre : { [Op.like]: '%' + term + '%'  } },
+        { year : { [Op.like]: '%' + term + '%'  } }
+      ] 
+    }
+  }).then((books) => {
+    res.render('index', {books: books, title: 'Books', isSearch: true } );
+  }).catch(err => console.log(err))
+
+});
+
+
 
 // shows a new book form
 router.get('/new', (req, res) => {
@@ -37,9 +59,11 @@ router.post('/new', (req, res) => {
       throw err;
     }
   }).catch((err) => {
-    res.render('server-error', err, {title: 'Server Error'})
+    res.render('error', err)
   });
 });
+
+
 
 // Get individual book detail
 router.get('/:id', (req, res) => {
@@ -50,27 +74,11 @@ router.get('/:id', (req, res) => {
       res.render('page-not-found', {title: 'Page Not Found'})
     } 
   }).catch((err) => {
-    res.render('server-error', err, {title: 'Server Error'})
+    res.render('error', err)
   });  
 });
 
 
-// Search for a book 
-router.get('/search', (req, res) => {
-  let { term } = req.query;
-  term = term.toLowerCase();
-
-  Book.findAll({ where: { 
-    title: { [Op.like] : '%' + term + '%' },  
-    author: {  [Op.like] : '%' + term + '%' },
-    genre: { [Op.like] : '%' + term + '%' },
-    year: { [Op.like] : '%' + term + '%' }
-    } 
-  }).then((books) => {
-    res.render('index', { books: books });
-  }).catch(err => console.log(err))
-
-});
 
 
 // updates the book detail 
@@ -96,7 +104,7 @@ router.post('/:id', (req, res) => {
       throw err;
     }
   }).catch((err) => {
-    res.render('server-error', err, { title: 'Server Error'})
+    res.render('error', err)
   });
 });
 
@@ -116,7 +124,7 @@ router.post('/:id/delete', (req, res) => {
   }).then(() =>{
     res.redirect('/');
   }).catch((err) => {
-    res.render('server-error', err, {title: 'Server Error'})
+    res.render('error', err)
   });
 });
 

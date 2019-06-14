@@ -16,21 +16,33 @@ router.use(bodyParser.json())
 
 // List of all books with pagination
 router.get('/', (req, res) => {
-  
-  Book.findAndCountAll().then((books) => {
+
+    let pageNum = req.params.page;
+
+    if ( pageNum === undefined || pageNum <= 1 ) {
+      pageNum = 0
+    } else {
+      pageNum = ( pageNum - 1 ) * 10
+    }
+
     let limit = 10;
-    let offset = 0;
-    let page = req.params.page;      // page number
-    let pages = Math.ceil(books.count / limit);
-    offset = limit * (page - 1);
+    let offset;
+
+    let pages;  //Number of pages
+    offset = limit * (pageNum - 1);
+
+    // total list of book
+    Book.count().then((count) => {
+      pages = Math.ceil( count / limit);
+    })
     
-    Book.findAll({ limit: 10, offset: offset, order: [['title', 'ASC']] }).then((books) => {
-      res.render('index', { books: books, title: 'Books', isSearch: false, pages: pages  });
+    Book.findAll({ offset, limit, order: [['title', 'ASC']] }).then((books) => {
+      res.render('index', { books: books, title: 'Books', isSearch: false, pages  });
     }).catch((err) => {
       res.render('error', err)
     });
 
-  })
+  
   
   
     

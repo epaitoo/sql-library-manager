@@ -9,14 +9,37 @@ router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
 
-// List of all books
+
+  
+  
+
+
+// List of all books with pagination
 router.get('/', (req, res) => {
-  Book.findAll({order: [['title', 'ASC']]}).then((books) => {
-    res.render('index', {books: books, title: 'Books', isSearch: false });
-  }).catch((err) => {
-    res.render('error', err)
-  });
+  
+  Book.findAndCountAll().then((books) => {
+    let limit = 10;
+    let offset = 0;
+    let page = req.params.page;      // page number
+    let pages = Math.ceil(books.count / limit);
+    offset = limit * (page - 1);
+    
+    Book.findAll({ limit: 10, offset: offset, order: [['title', 'ASC']] }).then((books) => {
+      res.render('index', { books: books, title: 'Books', isSearch: false, pages: pages  });
+    }).catch((err) => {
+      res.render('error', err)
+    });
+
+  })
+  
+  
+    
+
 });
+
+
+
+
 
 // Search for a book 
 router.get('/search', (req, res) => {
@@ -62,6 +85,8 @@ router.post('/new', (req, res) => {
     res.render('error', err)
   });
 });
+
+
 
 
 
@@ -127,6 +152,10 @@ router.post('/:id/delete', (req, res) => {
     res.render('error', err)
   });
 });
+
+
+
+
 
 
 

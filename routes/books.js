@@ -10,42 +10,40 @@ router.use(bodyParser.json())
 
 
 
-  
-  
-
-
 // List of all books with pagination
+
+
+
 router.get('/', (req, res) => {
 
-    let pageNum = req.params.page;
+  const limit = 10
+  let pageNum = req.query.page; 
 
-    if ( pageNum === undefined || pageNum <= 1 ) {
-      pageNum = 0
+    if (pageNum === undefined || pageNum <= 1) {
+        pageNum = 0;
     } else {
-      pageNum = ( pageNum - 1 ) * 10
+        pageNum = limit * (pageNum - 1);
     }
-
-    let limit = 10;
-    let offset;
-
-    let pages;  //Number of pages
-    offset = limit * (pageNum - 1);
-
-    // total list of book
-    Book.count().then((count) => {
+  
+  let offset;
+  
+  
+  let pages;  //Number of pages
+  offset = pageNum;
+    
+  // total list of book
+  Book.count()
+    .then((count) => {
       pages = Math.ceil( count / limit);
-    })
-    
-    Book.findAll({ offset, limit, order: [['title', 'ASC']] }).then((books) => {
+  })
+  
+  // findAll books with limit of 10 books per page
+  Book.findAll({ offset, limit, order: [['title', 'ASC']] })
+    .then((books) => {
       res.render('index', { books: books, title: 'Books', isSearch: false, pages  });
-    }).catch((err) => {
+  }).catch((err) => {
       res.render('error', err)
-    });
-
-  
-  
-  
-    
+  });    
 
 });
 
@@ -66,8 +64,9 @@ router.get('/search', (req, res) => {
         { year : { [Op.like]: '%' + term + '%'  } }
       ] 
     }
-  }).then((books) => {
-    res.render('index', {books: books, title: 'Books', isSearch: true } );
+  })
+    .then((books) => {
+      res.render('index', {books: books, title: 'Books', isSearch: true } );
   }).catch(err => console.log(err))
 
 });
@@ -104,12 +103,13 @@ router.post('/new', (req, res) => {
 
 // Get individual book detail
 router.get('/:id', (req, res) => {
-  Book.findByPk(req.params.id).then((book) => {
-    if (book) {
-      res.render('update-book', { book: book, title: 'Update Book' });
-    } else {
-      res.render('page-not-found', {title: 'Page Not Found'})
-    } 
+  Book.findByPk(req.params.id)
+    .then((book) => {
+      if (book) {
+        res.render('update-book', { book: book, title: 'Update Book' });
+      } else {
+        res.render('page-not-found', {title: 'Page Not Found'})
+      } 
   }).catch((err) => {
     res.render('error', err)
   });  
@@ -120,12 +120,13 @@ router.get('/:id', (req, res) => {
 
 // updates the book detail 
 router.post('/:id', (req, res) => {
-  Book.findByPk(req.params.id).then((book) => {
-    if (book) {
-      return book.update(req.body);
-    } else {
-      res.render('page-not-found', {title: 'Page Not Found'});
-    } 
+  Book.findByPk(req.params.id)
+    .then((book) => {
+      if (book) {
+        return book.update(req.body);
+      } else {
+        res.render('page-not-found', {title: 'Page Not Found'});
+      } 
   }).then(() => {
     res.redirect('/');
   }).catch((err) => {
@@ -152,23 +153,19 @@ router.post('/:id', (req, res) => {
 // deletes a book
 // Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting.
 router.post('/:id/delete', (req, res) => {
-  Book.findByPk(req.params.id).then((book) => {
-    if (book) {
-      return book.destroy();
-    } else {
-      res.render('page-not-found', {title: 'Page Not Found'});
-    }  
+  Book.findByPk(req.params.id)
+    .then((book) => {
+      if (book) {
+        return book.destroy();
+      } else {
+        res.render('page-not-found', {title: 'Page Not Found'});
+      }  
   }).then(() =>{
     res.redirect('/');
   }).catch((err) => {
     res.render('error', err)
   });
 });
-
-
-
-
-
 
 
 module.exports = router;

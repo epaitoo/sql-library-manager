@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
   let pages;  //Number of pages
   offset = pageNum;
     
-  // total list of book
+  // total numbber of books
   Book.count()
     .then((count) => {
       pages = Math.ceil( count / limit);
@@ -40,7 +40,7 @@ router.get('/', (req, res) => {
   // findAll books with limit of 10 books per page
   Book.findAll({ offset, limit, order: [['title', 'ASC']] })
     .then((books) => {
-      res.render('index', { books: books, title: 'Books', isSearch: false, pages  });
+      res.render('index', { books: books, title: 'Books', isSearch: false, pages, pageNum  });
   }).catch((err) => {
       res.render('error', err)
   });    

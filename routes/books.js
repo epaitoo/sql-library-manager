@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
   let pages;  //Number of pages
 
     if (pageNum === undefined || pageNum <= 1) {
-        pageNum = 1;
+        pageNum = 0;
     } else {
         pageNum = limit * (pageNum - 1);
     }
